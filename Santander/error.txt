@@ -1,0 +1,67 @@
+
+-------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
+●[解決]エラーログ（エラーではなく、不具合）
+
+[6400]  valid_0's rmse: 7.41277e+06
+[6500]  valid_0's rmse: 7.41058e+06
+[6600]  valid_0's rmse: 7.40841e+06
+[6700]  valid_0's rmse: 7.40629e+06
+[6800]  valid_0's rmse: 7.40415e+06
+[6900]  valid_0's rmse: 7.402e+06
+[7000]  valid_0's rmse: 7.39986e+06
+[7100]  valid_0's rmse: 7.39774e+06
+[7200]  valid_0's rmse: 7.39556e+06
+[7300]  valid_0's rmse: 7.39341e+06
+[7400]  valid_0's rmse: 7.39123e+06
+[7500]  valid_0's rmse: 7.38908e+06
+^CTraceback (most recent call last):
+  File "train.py", line 73, in <module>
+    model = run_lgb(train_X, train_y, valid_X, valid_y)
+  File "/home/manage/python/kaggle/work/Santander/proto/run_model.py", line 102, in run_lgb
+    verbose_eval=100)
+  File "/home/manage/python/kaggle/lib64/python3.6/site-packages/lightgbm/engine.py", line 201, in train
+    booster.update(fobj=fobj)
+  File "/home/manage/python/kaggle/lib64/python3.6/site-packages/lightgbm/basic.py", line 1521, in update
+    ctypes.byref(is_finished)))
+KeyboardInterrupt
+
+●発生事象
+・Santander のデータを初めてLightGBMに食わせたが一向に終わる気配なし。
+
+●原因
+・教師データのスケールが大きすぎた為
+
+●解決策
+・logを食わせてスケールを小さくしてみた。
+	train_y = np.log(train_y)
+
+（結果）
+2018-07-01 17:57:45,870 set_logger 74 [INFO][<module>] split valid (446, 4991) 
+Training until validation scores don't improve for 200 rounds.
+[100]   valid_0's rmse: 1.51966
+[200]   valid_0's rmse: 1.43238
+[300]   valid_0's rmse: 1.40273
+[400]   valid_0's rmse: 1.39296
+[500]   valid_0's rmse: 1.39075
+[600]   valid_0's rmse: 1.39124
+[700]   valid_0's rmse: 1.39266
+Early stopping, best iteration is:
+[528]   valid_0's rmse: 1.38995
+2018-07-01 17:59:12,369 set_logger 64 [INFO][run_predict] rmsle - Train: 0.050110140005039154 
+2018-07-01 17:59:12,369 set_logger 65 [INFO][run_predict] rmsle - valid: 0.09381019183440392 
+2018-07-01 17:59:12,639 set_logger 86 [INFO][<module>] Test shape (49342, 4991) 
+2018-07-01 17:59:41,915 set_logger 109 [INFO][<module>] Test End - Finish
+
+
+（※）教師データを小さくしているため、最後にexp で大きくする必要あり。
+　　　　Avito でスケールしたのは price であり教師データではなかった。
+　　　　Santander でスケールしているのは、教師データであるため、注意が必要。
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+
+
+

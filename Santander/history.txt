@@ -1,0 +1,142 @@
+----------------------------------------------------------------------------------------------
+●v04 - NN - 0.xxx
+	パラメータ
+	     lr = 0.1
+	     bz = int(trn_X.shape[0] / 10)
+	     ep = 50
+	     op = ks.optimizers.Adam(lr=lr)
+	モデル
+	     model_in = ks.Input(shape=(trn_X.shape[1],), dtype='float32', sparse=False)
+	     out = ks.layers.Dense(192, activation='relu')(model_in)
+	     out = ks.layers.Dense(64, activation='relu')(out)
+	     out = ks.layers.Dense(64, activation='relu')(out)
+	     out = ks.layers.Dense(1)(out)
+	     model = ks.Model(model_in, out)
+	エンコード：One-Hot、NaN=0
+	特徴：なし
+----------------------------------------------------------------------------------------------
+●v03 - amsmble
+1.46_01_lgb_submit.csv  * 0.5
+1.50_02_xgb_submit.csv  * 0.3
+1.59_xx_cat_submit.csv  * 0.2
+
+----------------------------------------------------------------------------------------------
+●v0x - CatBoost - 0.xxx
+	パラメータ
+             "iterations": 1000,
+             "learning_rate": 0.01,
+             "depth": 10,
+             "bagging_temperature": 0.2,
+             "eval_metric": 'RMSE',
+           # "eval_metric": 'AUC',
+             "random_seed": SEED,
+             "metric_period": 100,
+             "od_type": 'Iter',
+             "od_wait": 20,
+             "calc_feature_importance": True
+	エンコード：なし
+	特徴：なし
+
+2018-07-01 19:13:53,163 set_logger 30 [INFO][<module>] Start 
+2018-07-01 19:14:00,871 set_logger 33 [INFO][<module>] Train Data load end (4459, 4992) 
+2018-07-01 19:15:37,217 set_logger 36 [INFO][<module>] Test load end (49342, 4991) 
+2018-07-01 19:15:38,658 set_logger 53 [INFO][<module>] All load end (53801, 4991) 
+2018-07-01 19:15:39,652 set_logger 73 [INFO][<module>] split train (4013, 4991) 
+2018-07-01 19:15:39,653 set_logger 74 [INFO][<module>] split valid (446, 4991) 
+0:      learn: 14.4764861       test: 14.2531372        best: 14.2531372 (0)    total: 3.69s    remaining: 1h 1m 28s
+100:    learn: 5.5914266        test: 5.4009293 best: 5.4009293 (100)   total: 9m 1s    remaining: 1h 20m 19s
+200:    learn: 2.6084481        test: 2.4915078 best: 2.4915078 (200)   total: 18m 36s  remaining: 1h 13m 58s
+300:    learn: 1.8265589        test: 1.8143848 best: 1.8143848 (300)   total: 28m 30s  remaining: 1h 6m 11s
+400:    learn: 1.6470873        test: 1.6966084 best: 1.6966084 (400)   total: 38m 2s   remaining: 56m 49s
+500:    learn: 1.5894983        test: 1.6635361 best: 1.6635361 (500)   total: 48m 16s  remaining: 48m 4s
+600:    learn: 1.5605958        test: 1.6478290 best: 1.6478290 (600)   total: 58m 21s  remaining: 38m 44s
+700:    learn: 1.5395372        test: 1.6364474 best: 1.6364474 (700)   total: 1h 7m 25s        remaining: 28m 45s
+800:    learn: 1.5221174        test: 1.6250993 best: 1.6250993 (800)   total: 1h 16m 13s       remaining: 18m 56s
+900:    learn: 1.4995911        test: 1.6098629 best: 1.6098629 (900)   total: 1h 24m 57s       remaining: 9m 20s
+
+bestTest = 1.592025296
+bestIteration = 999
+
+Shrink model to first 1000 iterations.
+2018-07-01 20:50:01,469 set_logger 59 [INFO][run_predict] rmse - Train: 1.4693284327032083 
+2018-07-01 20:50:01,469 set_logger 60 [INFO][run_predict] rmse - valid: 1.5920252782312048 
+2018-07-01 20:50:01,469 set_logger 86 [INFO][<module>] Test shape (49342, 4991) 
+2018-07-01 20:51:07,926 set_logger 110 [INFO][<module>] Test End - Finish 
+
+----------------------------------------------------------------------------------------------
+●v02 - XGBoost - 0.xxx
+	パラメータ
+	　　　　　"eval_metric": 'rmse',
+             "max_depth": 8,           # [4, 6, 8, 12]
+             "min_child_weight": 6,    # [4, 6, 8]
+             "learning_rate": 0.01,     # [0.05, 0.075, 0.1, 0.2]
+             "colsample_bytree": 0.8,
+             "colsample_bylevel": 0.8,
+             "reg_alpha": 0,
+             "silent": True,
+
+	エンコード：なし
+	特徴：なし
+
+2018-07-01 18:38:04,704 set_logger 30 [INFO][<module>] Start 
+2018-07-01 18:38:11,848 set_logger 33 [INFO][<module>] Train Data load end (4459, 4992) 
+2018-07-01 18:39:37,540 set_logger 36 [INFO][<module>] Test load end (49342, 4991) 
+2018-07-01 18:39:39,057 set_logger 53 [INFO][<module>] All load end (53801, 4991) 
+2018-07-01 18:39:40,106 set_logger 73 [INFO][<module>] split train (4013, 4991) 
+2018-07-01 18:39:40,106 set_logger 74 [INFO][<module>] split valid (446, 4991) 
+[0]     train-rmse:13.9826      eval-rmse:13.7579
+Multiple eval metrics have been passed: 'eval-rmse' will be used for early stopping.
+
+Will train until eval-rmse hasn't improved in 200 rounds.
+[50]    train-rmse:8.56059      eval-rmse:8.3637
+[100]   train-rmse:5.31902      eval-rmse:5.15781
+[150]   train-rmse:3.40722      eval-rmse:3.30107
+〜〜〜〜
+[2600]  train-rmse:0.801214     eval-rmse:1.44003
+[2650]  train-rmse:0.797229     eval-rmse:1.44012
+Stopping. Best iteration:
+[2468]  train-rmse:0.812995     eval-rmse:1.4393
+
+2018-07-01 18:53:52,257 set_logger 59 [INFO][run_predict] rmse - Train: 0.8129941389743917 
+2018-07-01 18:53:52,257 set_logger 60 [INFO][run_predict] rmse - valid: 1.4392985741267013 
+2018-07-01 18:53:52,697 set_logger 86 [INFO][<module>] Test shape (49342, 4991) 
+2018-07-01 18:54:07,118 set_logger 110 [INFO][<module>] Test End - Finish
+
+
+----------------------------------------------------------------------------------------------
+●v01 - LightGBM - 0.xxx
+	パラメータ
+          "num_leaves": 128,         # [256]
+          "learning_rate": 0.01,     # [0.018]
+          "feature_fraction": 0.5,   # [0.5]
+          "bagging_freq": 5,
+          "bagging_fraction": 0.75,  # [0.75]
+          "bagging_seed": 2018,
+          "verbosity": -1,
+	エンコード：なし
+	特徴：なし
+
+2018-07-01 18:06:20,708 set_logger 30 [INFO][<module>] Start 
+2018-07-01 18:06:28,011 set_logger 33 [INFO][<module>] Train Data load end (4459, 4992) 
+2018-07-01 18:07:56,419 set_logger 36 [INFO][<module>] Test load end (49342, 4991) 
+2018-07-01 18:07:58,038 set_logger 53 [INFO][<module>] All load end (53801, 4991) 
+2018-07-01 18:07:59,131 set_logger 73 [INFO][<module>] split train (4013, 4991) 
+2018-07-01 18:07:59,131 set_logger 74 [INFO][<module>] split valid (446, 4991) 
+Training until validation scores don't improve for 200 rounds.
+[100]   valid_0's rmse: 1.51966
+[200]   valid_0's rmse: 1.43238
+[300]   valid_0's rmse: 1.40273
+[400]   valid_0's rmse: 1.39297
+[500]   valid_0's rmse: 1.39075
+[600]   valid_0's rmse: 1.39125
+[700]   valid_0's rmse: 1.39267
+Early stopping, best iteration is:
+[528]   valid_0's rmse: 1.38996
+2018-07-01 18:09:24,977 set_logger 64 [INFO][run_predict] rmsle - Train: 0.050110308838315104 
+2018-07-01 18:09:24,977 set_logger 65 [INFO][run_predict] rmsle - valid: 0.09381046846794366 
+2018-07-01 18:09:25,234 set_logger 86 [INFO][<module>] Test shape (49342, 4991) 
+2018-07-01 18:09:54,147 set_logger 110 [INFO][<module>] Test End - Finish 
+
+----------------------------------------------------------------------------------------------
+
+
